@@ -180,7 +180,7 @@ PROMPTS = {
         "not start your response with 'Alternative text:'."
     ),
     'spell_check': (
-        "Bitte überprüfe die Rechtschhreibung und Grammatik des Textes.  "
+        "Bitte überprüfe die Rechtschhreibung und Grammatik des Textes auf dem Bild einer Vorlesungsfolie.  "
         "Bitte gib für jede Seite im Dokument an, wo ein Fehler gefunden wurde und wie es richtig wäre. Gib auch eine kurze Begründung, warum es falsch war.  "
         
     )

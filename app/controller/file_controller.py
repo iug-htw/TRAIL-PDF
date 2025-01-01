@@ -144,33 +144,62 @@ def spell_check(filename):
     """
     current_app.logger.info(f"Starting spell check for {filename}")
     file_path = os.path.join(current_app.config['UPLOAD_PATH'], filename)
-    text_file_path = None
-    corrected_text_file_path = None
-
+    
+    #text_file_path = None
+    #corrected_text_file_path = None
+    prompt='spell_check'
+    current_app.logger.info(f"Prompt: {prompt}")
+    start_page = request.form.get('start_page', type=int, default=1)
+    num_pages = request.form.get('num_pages', type=int)
     try:
-        # Extract text from PDF
-        text = extract_text_from_pdf(file_path)
-        text_file_path = save_text_to_file(text, filename)
+        total_pages = len(PdfReader(file_path).pages)
 
+        if not num_pages or num_pages <= 0 or start_page + num_pages - 1 > total_pages:
+            num_pages = total_pages - start_page + 1
+
+        end_page = min(start_page + num_pages - 1, total_pages)
+        current_app.logger.info(
+            f"Converting pages {start_page} to {end_page} of PDF to images for {file_path}")
+
+        images = convert_pdf_to_images(file_path, start_page=start_page, end_page=end_page)
+        current_app.logger.info(f"Images generated for pages {start_page} to {end_page}: {images}")
+
+        current_app.logger.info(f"process images")
+        texts = process_images_with_ai(images, prompt)
+
+        flash('PDF erfolgreich bearbeitet.')
+        current_app.logger.info(f"Conversion completed for {filename}")
+        #return save_texts(texts, filename, prompt)
+
+        base_name, file_extension = os.path.splitext(filename)
+        modified_filename = f"{base_name}_pages_{start_page}_to_{end_page}{file_extension}"
+        return save_texts(texts, modified_filename, chosen_language)
+        
+        # Extract text from PDF
+        #text = extract_text_from_pdf(file_path)
+        #text_file_path = save_text_to_file(text, filename)
+    
     except Exception as e:
         flash(f'Error during spell check a: {e}')
         current_app.logger.error(f"Error during spell check for {filename}: {e}")
         return redirect(url_for('file.file_details', filename=filename))
-    try:
-        # Send text to AI for spell checking
-        corrected_text = send_image_to_ai(text_file_path, 'spell_check')
-
-        # Save corrected text
-        corrected_text_file_path = save_corrected_text(corrected_text, filename)
-
-        flash('Spell check completed successfully.')
-        current_app.logger.info(f"Spell check completed for {filename}")
-        return send_file(corrected_text_file_path, as_attachment=True)
-
-    except Exception as e:
-        flash(f'Error during spell check b: {e}')
-        current_app.logger.error(f"Error during spell check for {filename}: {e}")
-        return redirect(url_for('file.file_details', filename=filename))
     finally:
-        os.remove(text_file_path)
-        os.remove(corrected_text_file_path)
+        shutil.rmtree(current_app.config['TEMP_IMAGE_PATH'])
+    #try:
+    #    # Send text to AI for spell checking
+    #    corrected_text = send_image_to_ai(text_file_path, 'spell_check')
+
+    #    # Save corrected text
+    #    corrected_text_file_path = save_corrected_text(corrected_text, filename)
+
+    #    flash('Spell check completed successfully.')
+    #    current_app.logger.info(f"Spell check completed for {filename}")
+    #    return send_file(corrected_text_file_path, as_attachment=True)
+
+    #except Exception as e:
+    #    flash(f'Error during spell check b: {e}')
+    #    current_app.logger.error(f"Error during spell check for {filename}: {e}")
+    #    return redirect(url_for('file.file_details', filename=filename))
+    #finally:
+    #    os.remove(text_file_path)
+    #    os.remove(corrected_text_file_path)
