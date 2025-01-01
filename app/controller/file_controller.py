@@ -144,12 +144,19 @@ def spell_check(filename):
     """
     current_app.logger.info(f"Starting spell check for {filename}")
     file_path = os.path.join(current_app.config['UPLOAD_PATH'], filename)
+    text_file_path = None
+    corrected_text_file_path = None
 
     try:
         # Extract text from PDF
         text = extract_text_from_pdf(file_path)
         text_file_path = save_text_to_file(text, filename)
 
+    except Exception as e:
+        flash(f'Error during spell check a: {e}')
+        current_app.logger.error(f"Error during spell check for {filename}: {e}")
+        return redirect(url_for('file.file_details', filename=filename))
+    try:
         # Send text to AI for spell checking
         corrected_text = send_image_to_ai(text_file_path, 'spell_check')
 
@@ -161,7 +168,7 @@ def spell_check(filename):
         return send_file(corrected_text_file_path, as_attachment=True)
 
     except Exception as e:
-        flash(f'Error during spell check: {e}')
+        flash(f'Error during spell check b: {e}')
         current_app.logger.error(f"Error during spell check for {filename}: {e}")
         return redirect(url_for('file.file_details', filename=filename))
     finally:

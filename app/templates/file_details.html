@@ -81,7 +81,7 @@
             <button type="button" class="upload-button" onclick="submitSpellCheck()">
                 {{ _('Check Spelling') }}
             </button>
-            <button class="upload-button" type="button" onclick="window.location.href="{{ url_for("main.index") }}\"">
+            <button class="upload-button" type="button" onclick="window.location.href='{{ url_for('main.index')}}'">
                 {{ _('Back to file list') }}
             </button>
         </form>
@@ -96,7 +96,7 @@
 
     function submitSpellCheck() {
         var form = document.getElementById('conversionForm');
-        form.action = "{{ url_for('spell_check.spell_check', filename=filename) }}";
+        form.action = "{{ url_for('file.spell_check', filename=filename) }}";
         form.submit();
     }
 

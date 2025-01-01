@@ -56,6 +56,11 @@ def send_image_to_ai(image_path, chosen_prompt):
         current_app.logger.error(f"Unsupported language choice: {chosen_prompt}")
         return f"Error processing image. Unsupported language choice: {chosen_prompt}"
 
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {current_app.config['OPENAI_API_KEY']}"
+    }
+
     if chosen_prompt == 'spell_check':
         # Special handling for spell check prompt
         with open(image_path, 'r') as file:
@@ -72,11 +77,6 @@ def send_image_to_ai(image_path, chosen_prompt):
             "temperature": 0.2
         }
     else:
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {current_app.config['OPENAI_API_KEY']}"
-        }
-
         payload = {
             "model": current_app.config['GPT_MODEL'],
             "messages": [

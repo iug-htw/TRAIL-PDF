@@ -24,6 +24,8 @@ def spell_check(filename):
     """
     current_app.logger.info(f"Starting spell check for {filename}")
     file_path = os.path.join(current_app.config['UPLOAD_PATH'], filename)
+    text_file_path = None
+    corrected_text_file_path = None
 
     try:
         # Extract text from PDF
@@ -45,5 +47,7 @@ def spell_check(filename):
         current_app.logger.error(f"Error during spell check for {filename}: {e}")
         return redirect(url_for('file.file_details', filename=filename))
     finally:
-        os.remove(text_file_path)
-        os.remove(corrected_text_file_path)
+        if text_file_path and os.path.exists(text_file_path):
+            os.remove(text_file_path)
+        if corrected_text_file_path and os.path.exists(corrected_text_file_path):
+            os.remove(corrected_text_file_path)
