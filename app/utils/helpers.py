@@ -152,3 +152,38 @@ def escape_html(text):
     :rtype: str
     """
     return html.escape(text)
+
+
+def save_text_to_file(text, filename):
+    """
+    Saves the extracted text to a temporary file.
+
+    :param text: The extracted text from the PDF.
+    :type text: str
+    :param filename: The name of the original PDF file.
+    :type filename: str
+    :returns: The file path to the saved text file.
+    :rtype: str
+    """
+    base_name, _ = os.path.splitext(filename)
+    text_file_path = os.path.join('/tmp', f"{base_name}.txt")
+    with open(text_file_path, 'w', encoding='utf-8') as file:
+        file.write(text)
+    return text_file_path
+
+def save_corrected_text(corrected_text, filename):
+    """
+    Saves the corrected text to a file.
+
+    :param corrected_text: The corrected text after spell checking.
+    :type corrected_text: str
+    :param filename: The name of the original PDF file.
+    :type filename: str
+    :returns: The file path to the saved corrected text file.
+    :rtype: str
+    """
+    base_name, _ = os.path.splitext(filename)
+    corrected_text_file_path = os.path.join('/tmp', f"{base_name}_corrected.txt")
+    with open(corrected_text_file_path, 'w', encoding='utf-8') as file:
+        file.write(corrected_text)
+    return corrected_text_file_path

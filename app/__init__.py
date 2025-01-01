@@ -74,10 +74,12 @@ def create_app():
     from app.controller.main_controller import main_bp
     from app.controller.file_controller import file_bp
     from app.controller.image_controller import image_bp
+    from app.controller.spell_check_controller import spell_check_bp
 
     app.register_blueprint(main_bp)
     app.register_blueprint(file_bp)
     app.register_blueprint(image_bp)
+    app.register_blueprint(spell_check_bp)
 
     app.logger.info('Blueprints registered.')
 

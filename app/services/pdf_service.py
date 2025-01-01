@@ -2,6 +2,7 @@ import os
 import shutil
 from flask import current_app
 import fitz
+from PyPDF2 import PdfReader
 
 
 def convert_pdf_to_images(pdf_path, start_page=None, end_page=None):
@@ -43,3 +44,20 @@ def convert_pdf_to_images(pdf_path, start_page=None, end_page=None):
     except Exception as e:
         current_app.logger.error(f"Error in convert_pdf_to_images: {e}")
         raise
+
+
+def extract_text_from_pdf(pdf_path):
+    """
+    Extracts text from a PDF file.
+
+    :param pdf_path: The file path to the PDF.
+    :type pdf_path: str
+    :returns: The extracted text from the PDF.
+    :rtype: str
+    """
+    text = ""
+    with open(pdf_path, 'rb') as f:
+        pdf = PdfReader(f)
+        for page in pdf.pages:
+            text += page.extract_text()
+    return text

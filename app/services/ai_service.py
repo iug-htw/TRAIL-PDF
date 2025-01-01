@@ -56,25 +56,41 @@ def send_image_to_ai(image_path, chosen_prompt):
         current_app.logger.error(f"Unsupported language choice: {chosen_prompt}")
         return f"Error processing image. Unsupported language choice: {chosen_prompt}"
 
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {current_app.config['OPENAI_API_KEY']}"
-    }
+    if chosen_prompt == 'spell_check':
+        # Special handling for spell check prompt
+        with open(image_path, 'r') as file:
+            text_content = file.read()
+        payload = {
+            "model": current_app.config['GPT_MODEL'],
+            "messages": [
+                {
+                    "role": "user",
+                    "content": prompt_text + "\n\n" + text_content
+                }
+            ],
+            "max_tokens": 2000,
+            "temperature": 0.2
+        }
+    else:
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {current_app.config['OPENAI_API_KEY']}"
+        }
 
-    payload = {
-        "model": current_app.config['GPT_MODEL'],
-        "messages": [
-            {
-                "role": "user",
-                "content": [
-                    {"type": "text", "text": prompt_text},
-                    {"type": "image_url", "image_url": {"url": image_url}}
-                ]
-            }
-        ],
-        "max_tokens": 2000,
-        "temperature": 0.2
-    }
+        payload = {
+            "model": current_app.config['GPT_MODEL'],
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": prompt_text},
+                        {"type": "image_url", "image_url": {"url": image_url}}
+                    ]
+                }
+            ],
+            "max_tokens": 2000,
+            "temperature": 0.2
+        }
 
     try:
         response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)

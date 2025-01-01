@@ -178,5 +178,10 @@ PROMPTS = {
         "Also describe mathematical formulas in plain language so that people who don't understand LaTeX can understand the formula. "
         "Include specific associations in the alternative text if any exist. Your response should only include the alternative text; do "
         "not start your response with 'Alternative text:'."
+    ),
+    'spell_check': (
+        "Bitte überprüfe die Rechtschhreibung und Grammatik des Textes.  "
+        "Bitte gib für jede Seite im Dokument an, wo ein Fehler gefunden wurde und wie es richtig wäre. Gib auch eine kurze Begründung, warum es falsch war.  "
+        
     )
 }

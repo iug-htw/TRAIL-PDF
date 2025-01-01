@@ -78,7 +78,10 @@
             <button type="button" class="upload-button" onclick="submitPartialConversion()">
                 {{ _('Convert from Specified Pages') }}
             </button>
-            <button class="upload-button" type="button" onclick="window.location.href='{{ url_for('main.index') }}'">
+            <button type="button" class="upload-button" onclick="submitSpellCheck()">
+                {{ _('Check Spelling') }}
+            </button>
+            <button class="upload-button" type="button" onclick="window.location.href="{{ url_for("main.index") }}\"">
                 {{ _('Back to file list') }}
             </button>
         </form>
@@ -88,6 +91,12 @@
     function submitPartialConversion() {
         var form = document.getElementById('conversionForm');
         form.action = "{{ url_for('file.convert_pdf_n_pages', filename=filename) }}";
+        form.submit();
+    }
+
+    function submitSpellCheck() {
+        var form = document.getElementById('conversionForm');
+        form.action = "{{ url_for('spell_check.spell_check', filename=filename) }}";
         form.submit();
     }
 
