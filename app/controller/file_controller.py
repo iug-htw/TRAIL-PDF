@@ -64,7 +64,7 @@ def convert_pdf(filename):
 
         flash('PDF successfully converted to alternative text.')
         current_app.logger.info(f"Conversion completed for {filename}")
-        return save_texts(texts, filename, prompt)
+        return save_texts(texts, filename, chosen_language)
 
     except Exception as e:
         flash(f'Error during conversion: {e}')
@@ -207,6 +207,7 @@ def feedback(filename):
     current_app.logger.info(f"Prompt: {prompt}")
     start_page = request.form.get('start_page', type=int, default=1)
     num_pages = request.form.get('num_pages', type=int)
+    task = request.form.get('task', type=str)
     try:
         total_pages = len(PdfReader(file_path).pages)
 
@@ -221,8 +222,8 @@ def feedback(filename):
         current_app.logger.info(f"Images generated for pages {start_page} to {end_page}: {images}")
 
         current_app.logger.info(f"process images")
-        texts = process_images_with_ai(images, prompt)
-
+        texts = process_images_with_ai(images, prompt, task)
+        current_app.logger.info(f"Feedback {texts}")
         flash('PDF erfolgreich bearbeitet.')
         current_app.logger.info(f"Conversion completed for {filename}")
         base_name, file_extension = os.path.splitext(filename)

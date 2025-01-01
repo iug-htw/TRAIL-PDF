@@ -92,8 +92,55 @@ def send_image_to_ai(image_path, chosen_prompt):
         current_app.logger.error(f"Request to GPT API failed: {e}")
         return f"Error processing image. Exception: {e}"
 
+def send_text_to_ai(texts, chosen_prompt,task=""):
+    """
+    Sends a list of texts to the AI service and returns the generated text.
+    """
+    prompt_text = PROMPTS.get(chosen_prompt) + task
 
-def process_images_with_ai(images, chosen_prompt):
+    if prompt_text is None:
+        current_app.logger.error(f"Unsupported language choice: {chosen_prompt}")
+        return f"Error processing image. Unsupported language choice: {chosen_prompt}"
+
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {current_app.config['OPENAI_API_KEY']}"
+    }
+    collected_texts= " ".join(texts)
+    payload = {
+        "model": current_app.config['GPT_MODEL'],
+        "messages": [
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": prompt_text},
+                    {"type": "text", "text": collected_texts}
+                ]                
+            }
+        ],
+        "max_tokens": 2000,
+        "temperature": 0.2
+    }
+
+    try:
+        response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
+        if response.status_code == 200:
+            response_json = response.json()
+            text_content = response_json['choices'][0]['message']['content'] if response_json.get('choices') else ''
+            usage_info = response_json.get('usage', {})
+
+            save_usage_to_csv(usage_info)  # Save the token usage to a CSV file
+            
+            return text_content
+        else:
+            current_app.logger.error(
+                f"Error from GPT API: Status Code {response.status_code}, Response: {response.text}")
+            return f"Error processing image. API response status: {response.status_code}"
+    except requests.exceptions.RequestException as e:
+        current_app.logger.error(f"Request to GPT API failed: {e}")
+        return f"Error processing image. Exception: {e}"
+
+def process_images_with_ai(images, chosen_prompt,task=""):
     """
     Processes a list of images with the AI service and returns the generated texts.
 
@@ -109,13 +156,30 @@ def process_images_with_ai(images, chosen_prompt):
     :rtype: list of str
     """
     texts = []
-    for i, image in enumerate(images):
-        if i > 0:
-            time.sleep(2)
-        current_app.logger.info(f"Processing image {image} on page {i + 1}")
+    if chosen_prompt.startswith('feedback'):
+        for i, image in enumerate(images):
+            if i > 0:
+                time.sleep(2)
+            current_app.logger.info(f"Processing image {image} on page {i + 1}")
 
-        text = send_image_to_ai(image, chosen_prompt)
+            text = send_image_to_ai(image, 'german')
 
-        current_app.logger.info(f"Received text: {text}")
-        texts.append(text)
-    return texts
+            current_app.logger.info(f"Received text: {text}")
+            texts.append(text)
+        current_app.logger.info(f"Texte: {texts}")
+        current_app.logger.info(f"Prompt: {chosen_prompt}")
+        current_app.logger.info(f"Task: {task}")
+        answer=send_text_to_ai(texts, chosen_prompt,task)
+        
+        return answer
+    else:    
+        for i, image in enumerate(images):
+            if i > 0:
+                time.sleep(2)
+            current_app.logger.info(f"Processing image {image} on page {i + 1}")
+
+            text = send_image_to_ai(image, chosen_prompt)
+
+            current_app.logger.info(f"Received text: {text}")
+            texts.append(text)
+        return texts

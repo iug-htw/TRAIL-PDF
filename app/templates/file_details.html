@@ -76,7 +76,7 @@
 
             <label for="task" style="text-align: center">{{ _('Was war die Aufgabenstellung') }} 
                 </label>
-            <input type="number" name="num_pages" id="num_pages" min="1" max="{{ page_count }}">
+            <input type="text" name="task" id="task" >
 
             <input class="upload-button" type="submit" value="{{ _('Convert Full Document') }}" />
             <button type="button" class="upload-button" onclick="submitPartialConversion()">

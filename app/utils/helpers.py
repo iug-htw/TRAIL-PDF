@@ -40,7 +40,7 @@ def save_texts(texts, original_filename, language):
     elif language == "german":
         html_content += '<html lang="de">\n'
     else:
-        html_content += '<html>\n'
+        html_content += '<html lang="de">\n'
 
     html_content += "<head>\n<meta charset=\"UTF-8\">\n"
     html_content += f"<title>{new_filename}</title>\n"
