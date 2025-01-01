@@ -64,7 +64,7 @@ def convert_pdf(filename):
 
         flash('PDF successfully converted to alternative text.')
         current_app.logger.info(f"Conversion completed for {filename}")
-        return save_texts(texts, filename, chosen_language)
+        return save_texts(texts, filename, prompt)
 
     except Exception as e:
         flash(f'Error during conversion: {e}')
@@ -174,32 +174,11 @@ def spell_check(filename):
         base_name, file_extension = os.path.splitext(filename)
         modified_filename = f"{base_name}_pages_{start_page}_to_{end_page}{file_extension}"
         return save_texts(texts, modified_filename, chosen_language)
-        
-        # Extract text from PDF
-        #text = extract_text_from_pdf(file_path)
-        #text_file_path = save_text_to_file(text, filename)
-    
+   
     except Exception as e:
         flash(f'Error during spell check a: {e}')
         current_app.logger.error(f"Error during spell check for {filename}: {e}")
         return redirect(url_for('file.file_details', filename=filename))
     finally:
         shutil.rmtree(current_app.config['TEMP_IMAGE_PATH'])
-    #try:
-    #    # Send text to AI for spell checking
-    #    corrected_text = send_image_to_ai(text_file_path, 'spell_check')
-
-    #    # Save corrected text
-    #    corrected_text_file_path = save_corrected_text(corrected_text, filename)
-
-    #    flash('Spell check completed successfully.')
-    #    current_app.logger.info(f"Spell check completed for {filename}")
-    #    return send_file(corrected_text_file_path, as_attachment=True)
-
-    #except Exception as e:
-    #    flash(f'Error during spell check b: {e}')
-    #    current_app.logger.error(f"Error during spell check for {filename}: {e}")
-    #    return redirect(url_for('file.file_details', filename=filename))
-    #finally:
-    #    os.remove(text_file_path)
-    #    os.remove(corrected_text_file_path)
+   
