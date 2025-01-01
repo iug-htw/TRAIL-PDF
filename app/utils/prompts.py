@@ -184,5 +184,9 @@ PROMPTS = {
         "Bitte gib für jede Seite im Dokument an, wo ein Fehler gefunden wurde und wie es richtig wäre. Beginne immer mit der Seitenzahl."
         "Gib auch eine kurze Begründung, warum es falsch war. Wenn es keine Fehler gibt, brauchst Du nichts zu schreiben."
         
+    ),
+    'feedback': (
+        "Du erhälst eine Aufgabenstellung aus der Schule und die erarbeitete Lösung eines Schülers. "
+        "Bitte gib Feedback zur Lösung des Schülers. "        
     )
 }

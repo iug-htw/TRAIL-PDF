@@ -74,12 +74,19 @@
                 ({{ _('optional, leave empty if you want to convert till the end:') }})</label>
             <input type="number" name="num_pages" id="num_pages" min="1" max="{{ page_count }}">
 
+            <label for="task" style="text-align: center">{{ _('Was war die Aufgabenstellung') }} 
+                </label>
+            <input type="number" name="num_pages" id="num_pages" min="1" max="{{ page_count }}">
+
             <input class="upload-button" type="submit" value="{{ _('Convert Full Document') }}" />
             <button type="button" class="upload-button" onclick="submitPartialConversion()">
                 {{ _('Convert from Specified Pages') }}
             </button>
             <button type="button" class="upload-button" onclick="submitSpellCheck()">
                 {{ _('Check Spelling') }}
+            </button>
+            <button type="button" class="upload-button" onclick="submitFeedback()">
+                {{ _('Feedback') }}
             </button>
             <button class="upload-button" type="button" onclick="window.location.href='{{ url_for('main.index')}}'">
                 {{ _('Back to file list') }}
@@ -99,7 +106,11 @@
         form.action = "{{ url_for('file.spell_check', filename=filename) }}";
         form.submit();
     }
-
+    function submitFeedback() {
+        var form = document.getElementById('conversionForm');
+        form.action = "{{ url_for('file.feedback', filename=filename) }}";
+        form.submit();
+    }
     document.querySelectorAll('button, input, select').forEach(function(element) {
         element.addEventListener('focus', function() {
             element.style.outline = '2px solid #76B900';

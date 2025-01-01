@@ -79,7 +79,7 @@ def create_app():
     app.register_blueprint(main_bp)
     app.register_blueprint(file_bp)
     app.register_blueprint(image_bp)
-    app.register_blueprint(spell_check_bp)
+    #app.register_blueprint(spell_check_bp)
 
     app.logger.info('Blueprints registered.')
 

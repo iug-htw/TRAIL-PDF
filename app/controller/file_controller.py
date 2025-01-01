@@ -179,6 +179,61 @@ def spell_check(filename):
         flash(f'Error during spell check a: {e}')
         current_app.logger.error(f"Error during spell check for {filename}: {e}")
         return redirect(url_for('file.file_details', filename=filename))
+    #finally:
+    #    shutil.rmtree(current_app.config['TEMP_IMAGE_PATH'])
+   
+@file_bp.route('/feedback/<filename>', methods=['POST'])
+def feedback(filename):
+    """
+    Checks the spelling of the text extracted from a PDF.
+
+    - Logs the start of the spell check process.
+    - Extracts text from the PDF, sends it to the AI service for spell checking, and saves the corrected text.
+    - Handles and logs errors during the spell check process.
+
+    :param filename: The name of the PDF file to check.
+    :type filename: str
+    :returns:
+        Response: A response that initiates the download of the corrected text file.
+        Redirect: Redirects to the file details page if an error occurs.
+    :rtype: flask.Response
+    """
+    current_app.logger.info(f"Starting feedback for {filename}")
+    file_path = os.path.join(current_app.config['UPLOAD_PATH'], filename)
+    
+    #text_file_path = None
+    #corrected_text_file_path = None
+    prompt='feedback'
+    current_app.logger.info(f"Prompt: {prompt}")
+    start_page = request.form.get('start_page', type=int, default=1)
+    num_pages = request.form.get('num_pages', type=int)
+    try:
+        total_pages = len(PdfReader(file_path).pages)
+
+        if not num_pages or num_pages <= 0 or start_page + num_pages - 1 > total_pages:
+            num_pages = total_pages - start_page + 1
+
+        end_page = min(start_page + num_pages - 1, total_pages)
+        current_app.logger.info(
+            f"Converting pages {start_page} to {end_page} of PDF to images for {file_path}")
+
+        images = convert_pdf_to_images(file_path, start_page=start_page, end_page=end_page)
+        current_app.logger.info(f"Images generated for pages {start_page} to {end_page}: {images}")
+
+        current_app.logger.info(f"process images")
+        texts = process_images_with_ai(images, prompt)
+
+        flash('PDF erfolgreich bearbeitet.')
+        current_app.logger.info(f"Conversion completed for {filename}")
+        base_name, file_extension = os.path.splitext(filename)
+        current_app.logger.info(f"basename {base_name}")
+        current_app.logger.info(f"file extension {file_extension}")
+        modified_filename = f"{base_name}_pages_{start_page}_to_{end_page}{file_extension}"
+        return save_texts(texts, modified_filename, prompt)
+   
+    except Exception as e:
+        flash(f'Error during spell check a: {e}')
+        current_app.logger.error(f"Error during spell check for {filename}: {e}")
+        return redirect(url_for('file.file_details', filename=filename))
     finally:
         shutil.rmtree(current_app.config['TEMP_IMAGE_PATH'])
-   
