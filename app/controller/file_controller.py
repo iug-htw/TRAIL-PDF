@@ -169,11 +169,11 @@ def spell_check(filename):
 
         flash('PDF erfolgreich bearbeitet.')
         current_app.logger.info(f"Conversion completed for {filename}")
-        #return save_texts(texts, filename, prompt)
-
         base_name, file_extension = os.path.splitext(filename)
+        current_app.logger.info(f"basename {base_name}")
+        current_app.logger.info(f"file extension {file_extension}")
         modified_filename = f"{base_name}_pages_{start_page}_to_{end_page}{file_extension}"
-        return save_texts(texts, modified_filename, chosen_language)
+        return save_texts(texts, modified_filename, prompt)
    
     except Exception as e:
         flash(f'Error during spell check a: {e}')
